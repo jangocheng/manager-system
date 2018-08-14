@@ -42,11 +42,11 @@
                 <i class="el-icon-menu"></i>
                 <span>权限管理</span>
               </template>
-                <el-menu-item index="2-1">
+                <el-menu-item index="/roles">
                   <i class="el-icon-location"></i>
                   <span>角色列表</span>
                 </el-menu-item>
-                <el-menu-item index="2-2">
+                <el-menu-item index="/rights">
                   <i class="el-icon-location"></i>
                   <span>权限列表</span>
                 </el-menu-item>
@@ -69,16 +69,15 @@ export default {
     }
   },
   methods: {
-    logout () {
-      this.$confirm('确定要退出吗?', '提示', {
+    async logout () {
+      await this.$confirm('确定要退出吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        localStorage.removeItem('username')
-        localStorage.removeItem('userToken')
-        this.$router.push('/login')
       })
+      localStorage.removeItem('username')
+      localStorage.removeItem('userToken')
+      this.$router.push('/login')
     },
     handleOpen (key, keyPath) {
       console.log(key, keyPath)

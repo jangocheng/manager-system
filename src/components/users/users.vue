@@ -171,14 +171,12 @@ export default {
       this.axios.put(`users/${msg.id}/state/${msg.mg_state}`)
     },
     // 显示修改对话框
-    showEditDialog (msg) {
+    async showEditDialog (msg) {
       this.editDialog = true
-      this.axios.get(`users/${msg.id}`)
-        .then(res => {
-          if (res.data.meta.status === 200) {
-            this.editUserForm = res.data.data
-          }
-        })
+      let res = await this.axios.get(`users/${msg.id}`)
+      if (res.data.meta.status === 200) {
+        this.editUserForm = res.data.data
+      }
     },
     // 修改用户信息
     editUser () {
@@ -189,28 +187,27 @@ export default {
       this.editDialog = false
     },
     // 增加用户
-    addUser () {
-      this.axios.post('users', this.addUserForm)
-        .then(res => {
-          if (res.data.meta.status === 201) {
-            this.currentPage = Math.ceil(++this.total / this.pageSize)
-            this.getUersList()
-            this.$refs.addUserForm.resetFields()
-            this.addDialog = false
-          }
-        })
+    async addUser () {
+      let res = await this.axios.post('users', this.addUserForm)
+      if (res.data.meta.status === 201) {
+        this.currentPage = Math.ceil(++this.total / this.pageSize)
+        this.getUersList()
+        this.$refs.addUserForm.resetFields()
+        this.addDialog = false
+      }
     },
     // 删除用户信息
-    deleteUser (msg) {
+    async deleteUser (msg) {
       // 禁止删除admin
       if (msg.username === 'admin') {
         return false
       }
-      this.$confirm('你确定要删除该用户吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
+      try {
+        await this.$confirm('你确定要删除该用户吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
         this.axios.delete(`users/${msg.id}`)
           .then(res => {
             if (res.status === 200) {
@@ -220,11 +217,10 @@ export default {
               }
             }
           })
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      }).catch(() => {})
+        this.$message.success('删除用户成功!')
+      } catch (e) {
+        this.$message.error('删除用户失败!', e)
+      }
     },
     // 修改每页条目
     handleSizeChange (val) {

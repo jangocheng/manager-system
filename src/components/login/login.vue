@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <el-form :model="form" status-icon :rules="rules" label-position="left" ref="form" label-width="100px">
+    <el-form class="loginForm" :model="form" status-icon :rules="rules" label-position="left" ref="form" label-width="100px">
       <img src="../../assets/images/girl.jpg">
       <el-form-item label="用户名" prop="username">
         <el-input v-model="form.username"></el-input>
@@ -38,25 +38,21 @@ export default {
   },
   methods: {
     login () {
-      this.$refs.form.validate((valid) => {
+      this.$refs.form.validate(async (valid) => {
         if (valid) {
-          this.axios.post('login', {
-            username: this.form.username,
-            password: this.form.password
-          })
-            .then((result) => {
-              if (result.data.meta.status === 200) {
-                // 一定要先存token, 在进行跳转, 否则会出现第一次登录无效情况
-                localStorage.setItem('userToken', result.data.data.token)
-                localStorage.setItem('username', result.data.data.username)
-                // 配置axios默认发送的token
-                this.axios.defaults.headers.common['Authorization'] = localStorage.getItem('userToken')
-                // 跳转到首页
-                this.$router.push('/home')
-              } else {
-                return false
-              }
-            })
+          let res = await this.axios.post('login', this.form)
+          let {meta: {status}, data: {token, username}} = res.data
+          if (status === 200) {
+            // 一定要先存token, 在进行跳转, 否则会出现第一次登录无效情况
+            localStorage.setItem('userToken', token)
+            localStorage.setItem('username', username)
+            // 配置axios默认发送的token
+            this.axios.defaults.headers.common['Authorization'] = localStorage.getItem('userToken')
+            // 跳转到首页
+            this.$router.push('/home')
+          } else {
+            this.$message.error('用户名或密码错误')
+          }
         } else {
           return false
         }
@@ -76,7 +72,7 @@ export default {
   background: url('../../assets/images/bg.jpg') no-repeat center center;
   background-size: cover;
 }
-.el-form {
+.loginForm {
   position: relative;
   top: 50%;
   left: 50%;

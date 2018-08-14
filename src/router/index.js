@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import Login from '@/components/login/login'
 import Home from '@/components/home/home'
 import Users from '@/components/users/users'
+import Roles from '@/components/rights/roles'
+import Rights from '@/components/rights/rights'
 Vue.use(Router)
 
 // 配置路由
@@ -25,6 +27,16 @@ const router = new Router({
           path: '/users',
           name: 'users',
           component: Users
+        },
+        {
+          path: '/roles',
+          name: 'roles',
+          component: Roles
+        },
+        {
+          path: '/rights',
+          name: 'rights',
+          component: Rights
         }
       ]
     }
